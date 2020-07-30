@@ -14,7 +14,7 @@ const jwt = require("express-jwt");
 
 const spotifyRouter = require("./routes/spotify");
 const authRouter = require("./routes/auth");
-const lastfmRouter = require("./rotes/lastfm");
+// const lastfmRouter = require("./routes/lastfm");
 
 const User = require("./models/User");
 
@@ -62,11 +62,11 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(express.static("public"));
+app.use(express.static("client/build"));
 
 app.use("/spotify", spotifyRouter);
 app.use("/auth", authRouter);
-app.use("/lastfm", lastfmRouter);
+// app.use("/lastfm", lastfmRouter);
 
 /**
  * GraphQL server

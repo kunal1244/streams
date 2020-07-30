@@ -34,15 +34,15 @@ trackStream.on("error", function (error) {
 
 trackStream.start();
 
-var session = lastfm.session({
-  token: token,
-  handlers: {
-    success: function (session) {
-      lastfm.update("nowplaying", session, { track: track });
-      lastfm.update("scrobble", session, { track: track, timestamp: 12345678 });
-    },
-  },
-});
+// var session = lastfm.session({
+//   // token: token,
+//   handlers: {
+//     success: function (session) {
+//       lastfm.update("nowplaying", session, { track: track });
+//       lastfm.update("scrobble", session, { track: track, timestamp: 12345678 });
+//     },
+//   },
+// });
 
 var request = lastfm.request("artist.getInfo", {
   artist: "The Mae Shi",
