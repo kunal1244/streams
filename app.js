@@ -2,31 +2,31 @@
  * Application Entry point
  * @type {createApplication}
  */
-const express = require('express');
-const bodyParser = require('body-parser');
-const logger = require('morgan');
-const fs = require('fs');
-const dotenv = require('dotenv');
-const path = require('path');
-const mongoose = require('mongoose');
-const winston = require('winston');
-const moment = require('moment');
+const express = require("express");
+const bodyParser = require("body-parser");
+const logger = require("morgan");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const passport = require("passport");
 
-const expressGraphQL = require('express-graphql');
-const jwt = require('express-jwt');
+const expressGraphQL = require("express-graphql");
+const jwt = require("express-jwt");
 
-const User = require('./models/User');
+const spotifyRouter = require("./routes/spotify");
+const authRouter = require("./routes/auth");
+const lastfmRouter = require("./rotes/lastfm");
+
+const User = require("./models/User");
 
 // let's import the schema file we just created
-const GraphQLSchema = require('./graphql');
-
+const GraphQLSchema = require("./graphql");
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  *
  * Default path: .env (You can remove the path argument entirely, after renaming `.env.example` to `.env`)
  */
-dotenv.load({path: '.env'});
+dotenv.load({ path: ".env" });
 
 /**
  * Create Express server.
@@ -37,59 +37,79 @@ const app = express();
  * Connect to MongoDB.
  */
 mongoose.connect(process.env.MONGODB, {
-    useMongoClient: true
+  useMongoClient: true,
 });
-mongoose.connection.on('error', function () {
-    console.log('MongoDB Connection Error. Please make sure that MongoDB is running.');
-    process.exit(1);
+mongoose.connection.on("error", function () {
+  console.log(
+    "MongoDB Connection Error. Please make sure that MongoDB is running."
+  );
+  process.exit(1);
 });
-mongoose.set('debug', true);
+mongoose.set("debug", true);
 
 /**
  * Express configuration.
  */
-app.set('port', process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3000);
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true, parameterLimit: 5000}));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(
+  bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 5000 })
+);
+app.use(bodyParser.json({ limit: "50mb" }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(express.static("public"));
+
+app.use("/spotify", spotifyRouter);
+app.use("/auth", authRouter);
+app.use("/lastfm", lastfmRouter);
 
 /**
  * GraphQL server
  */
 
-app.use('/graphql', jwt({
+app.use(
+  "/graphql",
+  jwt({
     secret: process.env.JWT_SECRET_KEY,
-    requestProperty: 'auth',
+    requestProperty: "auth",
     credentialsRequired: false,
-}));
+  })
+);
 
 // =========== GraphQL setting  ========== //
-app.use('/graphql', async (req, res, done) => {
-    var userId = (req.auth && req.auth.id ) ? req.auth.id : undefined;
-    const user = ( userId ) ? await User.findById(userId): undefined;
-    req.context = {
-        user: user,
-    }
-    done();
+app.use("/graphql", async (req, res, done) => {
+  var userId = req.auth && req.auth.id ? req.auth.id : undefined;
+  const user = userId ? await User.findById(userId) : undefined;
+  req.context = {
+    user: user,
+  };
+  done();
 });
 
-
-app.use('/graphql', expressGraphQL(req => ({
-        schema: GraphQLSchema,
-        context: req.context,
-        graphiql: process.env.NODE_ENV === 'development',
-    })
-));
+app.use(
+  "/graphql",
+  expressGraphQL((req) => ({
+    schema: GraphQLSchema,
+    context: req.context,
+    graphiql: process.env.NODE_ENV === "development",
+  }))
+);
 // =========== GraphQL setting END ========== //
 
 /**
  * Start Express server.
  */
-app.listen(app.get('port'), function () {
-    console.log('Express server listening on port %d in %s mode', app.get('port'), app.get('env'));
+app.listen(app.get("port"), function () {
+  console.log(
+    "Express server listening on port %d in %s mode",
+    app.get("port"),
+    app.get("env")
+  );
 });
 
 module.exports = app;
