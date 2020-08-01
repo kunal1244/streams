@@ -13,6 +13,8 @@ router.get("/cb", SpotifyController.callback);
 
 router.get("/userinfo", SpotifyController.userInfo);
 
-router.get("/playlists", SpotifyController.getUserPlaylists);
+router.get("/albums", SpotifyController.getUserAlbums);
+
+router.get("/genres", SpotifyController.getUserGenres);
 
 module.exports = router;

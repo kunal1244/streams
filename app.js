@@ -8,6 +8,13 @@ const logger = require("morgan");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const passport = require("passport");
+// const redis = require("redis");
+
+const cors = require('cors');
+
+
+// const REDIS_PORT = process.env.REDIS_PORT || 6379;
+// const redisClient = redis.createClient(REDIS_PORT);
 
 const expressGraphQL = require("express-graphql");
 const jwt = require("express-jwt");
@@ -52,7 +59,8 @@ mongoose.set("debug", true);
  */
 app.set("port", process.env.PORT || 3000);
 
-app.use(logger("dev"));
+
+app.use(cors());
 
 app.use(
   bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 5000 })

@@ -21,6 +21,8 @@ import {
   XAxis,
 } from "recharts";
 
+import axios from "axios";
+
 // styles
 import useStyles from "./styles";
 
@@ -47,6 +49,15 @@ export default function Dashboard(props) {
 
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
+
+  axios.get(`http://localhost:3000/spotify/userinfo`)
+  .then(res => {
+    const info = res.data;
+    console.log("success", info);
+    // this.setState({ persons });
+  }).catch(err => {
+    console.log("error ", err);
+  })
 
   return (
     <>
