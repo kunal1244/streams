@@ -1,10 +1,10 @@
 const SpotifyWebApi = require("spotify-web-api-node");
+const spotify_graphql = require('spotify-graphql');
+const apiQuery = require('../graphql/queries');
 
 const scopes = [
 	"user-read-private",
 	"user-read-email",
-	"playlist-modify-public",
-	"playlist-modify-private",
 	"user-library-read",
 	"user-read-recently-played",
 	"user-follow-read",
@@ -13,63 +13,16 @@ const scopes = [
 
 require("dotenv").config();
 
-
-var spotifyApi = new SpotifyWebApi({
+let spotifyConfig = {
 	clientId: process.env.SPOTIFY_API_ID,
 	clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
 	redirectUri: process.env.SPOTIFY_CALLBACK_URL,
-});
-
-
-function setTokens(){
-	spotifyApi.setAccessToken("BQAEw3Mq1cm3buGSjmc9aVHKi3jp1mRcYmmomAJaKc3lshZP6kb5H4wWKjlugzWJm8PJTabfkC4wpuUnvLkHnePE1P-2lpR2F0w5-2QI3fU4JlRjVjJRxB_GCxZ6akmbX9JQO_SRNrS3qSHuYASDVJJTwLYKEM9I-3D_CJKtHK0LYyMCfdU73_DxBm1z9ushL_Gq5xk6tU_14pglMWXXbRXAoYnbu9iodGErL85DnTPr5mn1MyaQvjvum7uWIg5TqaKaZg");
-	spotifyApi.setRefreshToken("AQCnXt4jUKRGPhwvxrCdSqIM61NDoqQlNxJK99PGhm2lpZ3LZZpkgjqUYSi5s5Fnal7M5Nl7brGlOmthphY1y3EfGjD9QWxQmCBjps_QITAZShhFIwS162IhDEu73izgQZQ");
 }
 
-async function getData(){
-	try{
+var spotifyApi = new SpotifyWebApi(spotifyConfig);
 
-		let apiFollowedArtistsData = [], followedArtists = [];
-		const data = await spotifyApi.getFollowedArtists( { limit : 50 } );
-		apiFollowedArtistsData.push(data);
-		let last_id;
-		if(data.body.artists.items.length == 50) last_id = data.body.artists.items[49].id;
-		
-		const totalArtists = data.body.artists.total;
-		
-		for(let i = 1; i <= totalArtists / 50; i++){
-			const temp_data = await spotifyApi.getFollowedArtists( { limit : 50, after : last_id } );
-			apiFollowedArtistsData.push(temp_data);
-			
-			if(temp_data.body.artists.items.length == 50) last_id = temp_data.body.artists.items[49].id;
-		}
-		
-		let followedArtistsData = [];
-		apiFollowedArtistsData.forEach(element => {
-			element.body.artists.items.forEach(item => {
-				followedArtistsData.push(item);
-			})
-		});
-		
-		const genres = {};
-		followedArtistsData.forEach(item => {
-			item.genres.forEach(genre => {
-				if(genres[genre] != undefined) genres[genre]++;
-				else genres[genre] = 1;
-			});
-			let artist = {"name": item.name};
-			artist["images"] = item.images.slice(-1)[0]["url"];
-			followedArtists.push(artist) ;
-		});
-
-
-
-
-		return genres;
-	} catch(err) {
-		console.log(err);
-	}
-	
+function setTokens(){
+	spotifyConfig.accessToken = "BQAy3zPTPwEYak73TjGzrCm0Dyu-9eJhoLR357URbc_v5c9rWZGqtB6pLrVkLv1RKtkPNHD7JdxnJGNaDsZpb8gRSCfVUcRSJmw3pKCfB06m2-jw0Rnmmx9i2dgkg0PJVV8I4_cIVWedFWXVy9nUlHyG8r7FQWRgvJa7tA2EA93a6X10K_kJe7idj_dLAB0hnTYhP4yeQ18tfxglfmwMfkV7bbyO7XJtBl5AcDEagx5ypPnxwn40XxWEIrmi_-f085Ds2A";
 }
 
 exports.login = (req, res) => {
@@ -91,30 +44,50 @@ exports.callback = async (req, res) => {
 	}
 };
 
-exports.userInfo = async (req, res) => {
-	try {
-		setTokens();
-		var result = await spotifyApi.getMe();
-		res.status(200).send(result.body);
-	} catch (err) {
-		res.status(400).send(err);
-	}
-};
+function getData(req, res) {
+	setTokens()
+	const apiData = await spotify_graphql.SpotifyGraphQLClient(spotifyConfig).query(apiQuery);
+	getUserGenres(apiData);
+}
 
-exports.getUserAlbums = async (req, res) => {
-	try {
-		setTokens();
-		var result = await spotifyApi.getMySavedAlbums();
-		res.status(200).send(result.body);
-	} catch (err) {
-		res.status(400).send(err);
-	}
-};
+function getArtistsandGenres(apiData){
+	let artistData = {};
+	let genreData = {
+		"artists" : [],
+		"genres" : {}
+	};
+	apiData.me.artists.forEach(artist => {
+		let temp = artist;
+		delete temp.id;
+		delete temp.genres;
+		if(!genreData.artists.includes(artist.id)){
+			genreData.artists.push(artist.id);
+			artist.genres.forEach(genre => {
+				if(genreData.genres[genre] != undefined) genreData.genres[genre]++;
+				else genreData.genres[genre] = 1;
+			})
+		}
+	});
+}
 
-exports.getUserGenres = async (req, res) => {
+function getArtists (apiData) {
 	try {
-		setTokens();
-		const genres = await getData();
+		// const genreData = await spotify_graphql.SpotifyGraphQLClient(spotifyConfig)
+		// .query(`{
+		// 	me {
+		// 		artists {
+		// 		  genres
+		// 		}
+		// 	  }
+		//   }
+		// `)
+		let genres = {};
+		genreData.data.me.artists.forEach(item => {
+			item.genres.forEach(genre => {
+				if(genres[genre] != undefined) genres[genre]++;
+				else genres[genre] = 1;
+			})
+		})
 		let genres_categorized = {
 			"pop": {
 				"count" : 0,

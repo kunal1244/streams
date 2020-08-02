@@ -16,7 +16,7 @@ const cors = require('cors');
 // const REDIS_PORT = process.env.REDIS_PORT || 6379;
 // const redisClient = redis.createClient(REDIS_PORT);
 
-const expressGraphQL = require("express-graphql");
+// const expressGraphQL = require("express-graphql");
 const jwt = require("express-jwt");
 
 const spotifyRouter = require("./routes/spotify");
@@ -25,8 +25,6 @@ const authRouter = require("./routes/auth");
 
 const User = require("./models/User");
 
-// let's import the schema file we just created
-const GraphQLSchema = require("./graphql");
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -75,39 +73,6 @@ app.use(express.static("client/build"));
 app.use("/spotify", spotifyRouter);
 app.use("/auth", authRouter);
 // app.use("/lastfm", lastfmRouter);
-
-/**
- * GraphQL server
- */
-
-app.use(
-  "/graphql",
-  jwt({
-    secret: process.env.JWT_SECRET_KEY,
-    requestProperty: "auth",
-    credentialsRequired: false,
-  })
-);
-
-// =========== GraphQL setting  ========== //
-app.use("/graphql", async (req, res, done) => {
-  var userId = req.auth && req.auth.id ? req.auth.id : undefined;
-  const user = userId ? await User.findById(userId) : undefined;
-  req.context = {
-    user: user,
-  };
-  done();
-});
-
-app.use(
-  "/graphql",
-  expressGraphQL((req) => ({
-    schema: GraphQLSchema,
-    context: req.context,
-    graphiql: process.env.NODE_ENV === "development",
-  }))
-);
-// =========== GraphQL setting END ========== //
 
 /**
  * Start Express server.

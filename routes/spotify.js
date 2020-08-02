@@ -11,9 +11,9 @@ router.get("/login", SpotifyController.login);
 
 router.get("/cb", SpotifyController.callback);
 
-router.get("/userinfo", SpotifyController.userInfo);
+// router.get("/userinfo", SpotifyController.userInfo);
 
-router.get("/albums", SpotifyController.getUserAlbums);
+// router.get("/albums", SpotifyController.getUserAlbums);
 
 router.get("/genres", SpotifyController.getUserGenres);
 
