@@ -1,27 +1,26 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { ThemeProvider } from "@material-ui/styles";
-import { CssBaseline } from "@material-ui/core";
+import { createBrowserHistory } from "history";
+import { Router, Route, Switch } from "react-router-dom";
 
-import Themes from "./themes";
-import App from "./components/App";
-import * as serviceWorker from "./serviceWorker";
-import { LayoutProvider } from "./context/LayoutContext";
-import { UserProvider } from "./context/UserContext";
+import "assets/scss/material-kit-react.scss?v=1.9.0";
+
+// pages for this product
+import Components from "views/Components/Components.js";
+import Checklists from "views/Checklists/Checklists.js";
+import Dashboard from "views/Dashboard/Dashboard.js";
+import LoginPage from "views/LoginPage/LoginPage.js";
+
+var hist = createBrowserHistory();
 
 ReactDOM.render(
-  <LayoutProvider>
-    <UserProvider>
-      <ThemeProvider theme={Themes.default}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </UserProvider>
-  </LayoutProvider>,
-  document.getElementById("root"),
+  <Router history={hist}>
+    <Switch>
+      <Route path="/checklists" component={Checklists} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/" component={Components} />
+    </Switch>
+  </Router>,
+  document.getElementById("root")
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
