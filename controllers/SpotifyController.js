@@ -22,7 +22,7 @@ let spotifyConfig = {
 var spotifyApi = new SpotifyWebApi(spotifyConfig);
 
 function setTokens(){
-	spotifyConfig.accessToken = "BQAy3zPTPwEYak73TjGzrCm0Dyu-9eJhoLR357URbc_v5c9rWZGqtB6pLrVkLv1RKtkPNHD7JdxnJGNaDsZpb8gRSCfVUcRSJmw3pKCfB06m2-jw0Rnmmx9i2dgkg0PJVV8I4_cIVWedFWXVy9nUlHyG8r7FQWRgvJa7tA2EA93a6X10K_kJe7idj_dLAB0hnTYhP4yeQ18tfxglfmwMfkV7bbyO7XJtBl5AcDEagx5ypPnxwn40XxWEIrmi_-f085Ds2A";
+	spotifyConfig.accessToken = ""
 }
 
 exports.login = (req, res) => {
@@ -35,6 +35,7 @@ exports.callback = async (req, res) => {
 	try {
 		var data = await spotifyApi.authorizationCodeGrant(code);
 		const { access_token, refresh_token } = data.body;
+		spotifyConfig.accessToken = access_token;
 		spotifyApi.setAccessToken(access_token);
 		spotifyApi.setRefreshToken(refresh_token);
 		console.log(access_token + "         " + refresh_token);
@@ -44,10 +45,85 @@ exports.callback = async (req, res) => {
 	}
 };
 
-function getData(req, res) {
-	setTokens()
-	const apiData = await spotify_graphql.SpotifyGraphQLClient(spotifyConfig).query(apiQuery);
-	getUserGenres(apiData);
+exports.getData = async (req, res) => {
+	try{
+		// setTokens()
+		const apiData = await spotify_graphql.SpotifyGraphQLClient(spotifyConfig).query(apiQuery.dataQuery);
+		const { artists, genres } = getArtistsandGenres(apiData.data);
+		const { albums } = getAlbums(apiData.data);
+		const response = { 
+			"artists": artists,
+			"genres": genres,
+			"albums": albums
+		};
+		res.status(200).json(response);
+	} catch(err) {
+		console.log("error: ", err);
+		res.status(400).json(err);
+	}
+}
+
+function getAlbums(apiData){
+	let albumData = {};
+	apiData.me.albums.forEach(album_ => {
+		let album = album_.album;
+		let temp = {
+			"id": album.id,
+			"name": album.name,
+			"images": album.images,
+			"count": 5
+		}
+		if(albumData[album.id] == undefined) albumData[album.id] = temp;	
+		else albumData[album.id].count += 5;
+	});
+
+	apiData.me.tracks.forEach(track_ => {
+		let track = track_.track;
+		if(albumData[track.album.id] == undefined){
+			albumData[track.album.id] = {
+				"id": track.album.id,
+				"name": track.album.name,
+				"images": null,
+				"count": 1
+			};
+		}	
+		else albumData[track.album.id].count++;
+	});
+
+	apiData.me.top_tracks.forEach(track => {
+		if(albumData[track.album.id] == undefined){
+			albumData[track.album.id] = {
+				"id": track.album.id,
+				"name": track.album.name,
+				"images": null,
+				"count": 1
+			};
+		}	
+		else albumData[track.album.id].count++;
+	});
+
+	apiData.me.playlists.forEach(playlist => {
+		playlist.tracks.forEach(track_ => {
+			let track = track_.track;
+			if(albumData[track.album.id] == undefined){
+				albumData[track.album.id] = {
+					"id": track.album.id,
+					"name": track.album.name,
+					"images": null,
+					"count": 1
+				};
+			}	
+			else albumData[track.album.id].count++;
+		});
+	});
+
+	let albums = Object.values(albumData);
+
+	albums.sort(function(a, b) {
+		return b.count - a.count;
+	});
+
+	return {albums: albums};
 }
 
 function getArtistsandGenres(apiData){
@@ -57,37 +133,118 @@ function getArtistsandGenres(apiData){
 		"genres" : {}
 	};
 	apiData.me.artists.forEach(artist => {
-		let temp = artist;
-		delete temp.id;
-		delete temp.genres;
+		let temp = {
+			"id": artist.id,
+			"name": artist.name,
+			"images": artist.images,
+			"count": 10
+		}
+		if(artistData[artist.id] == undefined) artistData[artist.id] = temp;
+		else artistData[artist.id].count += 10;
+
 		if(!genreData.artists.includes(artist.id)){
 			genreData.artists.push(artist.id);
 			artist.genres.forEach(genre => {
 				if(genreData.genres[genre] != undefined) genreData.genres[genre]++;
 				else genreData.genres[genre] = 1;
-			})
+			});
 		}
 	});
+
+	apiData.me.top_artists.forEach(artist => {
+		let temp = {
+			"id": artist.id,
+			"name": artist.name,
+			"images": artist.images,
+			"count": 5
+		}
+
+		if(artistData[artist.id] == undefined) artistData[artist.id] = temp;
+		else artistData[artist.id].count += 5;
+
+		if(!genreData.artists.includes(artist.id)){
+			genreData.artists.push(artist.id);
+			artist.genres.forEach(genre => {
+				if(genreData.genres[genre] != undefined) genreData.genres[genre]++;
+				else genreData.genres[genre] = 1;
+			});
+		}
+	});
+
+	apiData.me.albums.forEach(album_ => {
+		let album = album_.album;
+		album.artists.forEach(artist => {
+			if(artistData[artist.id] == undefined){
+				artistData[artist.id] = {
+					"id": artist.id,
+					"name": artist.name,
+					"images": null,
+					"count": 3
+				};
+			}	
+			else artistData[artist.id].count += 3;
+		})
+	});
+
+	apiData.me.tracks.forEach(track_ => {
+		let track = track_.track;
+		track.artists.forEach(artist => {
+			if(artistData[artist.id] == undefined){
+				artistData[artist.id] = {
+					"id": artist.id,
+					"name": artist.name,
+					"images": null,
+					"count": 1
+				};
+			}	
+			else artistData[artist.id].count++;
+		})
+	});
+
+	apiData.me.top_tracks.forEach(track => {
+		track.artists.forEach(artist => {
+			if(artistData[artist.id] == undefined){
+				artistData[artist.id] = {
+					"id": artist.id,
+					"name": artist.name,
+					"images": null,
+					"count": 1
+				};
+			}	
+			else artistData[artist.id].count++;
+		})
+	});
+
+	apiData.me.playlists.forEach(playlist => {
+		playlist.tracks.forEach(track_ => {
+			let track = track_.track;
+			track.artists.forEach(artist => {
+				if(artistData[artist.id] == undefined){
+					artistData[artist.id] = {
+						"id": artist.id,
+						"name": artist.name,
+						"images": null,
+						"count": 1
+					};
+				}	
+				else artistData[artist.id].count++;
+			})
+		});
+	});
+
+	const genres = categorizeGenres(genreData.genres);
+
+	let artists = Object.values(artistData);
+
+	artists.sort(function(a, b) {
+		return b.count - a.count;
+	});
+
+	return {artists: artists, genres: genres};
 }
 
-function getArtists (apiData) {
+function categorizeGenres(genres) {
 	try {
-		// const genreData = await spotify_graphql.SpotifyGraphQLClient(spotifyConfig)
-		// .query(`{
-		// 	me {
-		// 		artists {
-		// 		  genres
-		// 		}
-		// 	  }
-		//   }
-		// `)
-		let genres = {};
-		genreData.data.me.artists.forEach(item => {
-			item.genres.forEach(genre => {
-				if(genres[genre] != undefined) genres[genre]++;
-				else genres[genre] = 1;
-			})
-		})
 		let genres_categorized = {
 			"pop": {
 				"count" : 0,
@@ -182,9 +339,8 @@ function getArtists (apiData) {
 		}
 
 		
-		res.status(200).json(genres_categorized);
+		return genres_categorized;
 	} catch (err) {
 		console.log(err);
-		res.status(400).send(err);
 	}
 }

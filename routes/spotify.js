@@ -15,6 +15,6 @@ router.get("/cb", SpotifyController.callback);
 
 // router.get("/albums", SpotifyController.getUserAlbums);
 
-router.get("/genres", SpotifyController.getUserGenres);
+router.get("/data", SpotifyController.getData);
 
 module.exports = router;

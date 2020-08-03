@@ -1,6 +1,6 @@
-const dataQuery = `{
+exports.dataQuery = `{
     me {
-      	artists{
+      	artists(limit : -1){
           id
           name
           images{
@@ -21,7 +21,7 @@ const dataQuery = `{
             }
           }
         } 
-        tracks {
+        tracks(limit : -1){
           track{
             album{
               id
@@ -33,7 +33,7 @@ const dataQuery = `{
             }
           }
         }
-        top_tracks {
+        top_tracks(limit : -1){
           album{
             id
             name
@@ -43,7 +43,7 @@ const dataQuery = `{
             name
           }
         }
-        top_artists{
+        top_artists(limit : -1){
           id
           name
           genres
@@ -51,8 +51,8 @@ const dataQuery = `{
             url
           }
         }
-        playlists{
-            tracks{
+        playlists(limit : -1){
+            tracks(limit : -1){
                 track{
                     album{
                         id
