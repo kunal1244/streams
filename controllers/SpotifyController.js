@@ -38,7 +38,7 @@ exports.callback = async (req, res) => {
 		spotifyConfig.accessToken = access_token;
 		spotifyApi.setAccessToken(access_token);
 		spotifyApi.setRefreshToken(refresh_token);
-		console.log(access_token + "         " + refresh_token);
+		// console.log(access_token + "         " + refresh_token);
 		res.redirect("http://localhost:3000");
 	} catch (err) {
 		res.redirect("/#/error/invalid token");
@@ -232,7 +232,13 @@ function getArtistsandGenres(apiData){
 		});
 	});
 
-	const genres = categorizeGenres(genreData.genres);
+	const genres_categorized = categorizeGenres(genreData.genres);
+
+	let genres = Object.values(genres_categorized);
+
+	genres.sort(function(a, b) {
+		return b.count - a.count;
+	});
 
 	let artists = Object.values(artistData);
 
@@ -247,92 +253,114 @@ function categorizeGenres(genres) {
 	try {
 		let genres_categorized = {
 			"pop": {
+				"genre" : "pop",
 				"count" : 0,
 				"types" : []
 			},
 			"rock": {
+				"genre" : "rock",
 				"count" : 0,
 				"types" : []
 			},
 			"metal": {
+				"genre" : "metal",
 				"count" : 0,
 				"types" : []
 			},
 			"hip hop": {
+				"genre" : "hip hop",
 				"count" : 0,
 				"types" : []
 			},
 			"edm": {
+				"genre" : "edm",
 				"count" : 0,
 				"types" : []
 			},
 			"folk": {
+				"genre" : "folk",
 				"count" : 0,
 				"types" : []
 			},
 			"jazz": {
+				"genre" : "jazz",
 				"count" : 0,
 				"types" : []
 			},
 			"bollywood": {
+				"genre" : "bollywood",
 				"count" : 0,
 				"types" : []
 			},
 			"reggae": {
+				"genre" : "reggae",
 				"count" : 0,
 				"types" : []
 			},
 			"indie": {
+				"genre" : "indie",
 				"count" : 0,
 				"types" : []
 			},
 			"others": {
+				"genre" : "others",
 				"count" : 0,
 				"types" : []
 			},
 		};
 		for(let key of Object.keys(genres)){
+			let flag = false;
 			if(key.includes("pop")){
+				flag = true;
 				genres_categorized["pop"].count += genres[key];
 				genres_categorized["pop"].types.push(key);
 			}
-			else if(key.includes("rock") || key.includes("punk")){
+			if(key.includes("rock") || key.includes("punk")){
+				flag = true;
 				genres_categorized["rock"].count += genres[key];
 				genres_categorized["rock"].types.push(key);
 			}
-			else if(key.includes("metal") || key.includes("grunge")){
+			if(key.includes("metal") || key.includes("grunge")){
+				flag = true;
 				genres_categorized["metal"].count += genres[key];
 				genres_categorized["metal"].types.push(key);
 			}
-			else if(key.includes("hip hop") || key.includes("rap") || key.includes("g funk")){
+			if(key.includes("hip hop") || key.includes("rap") || key.includes("g funk")){
+				flag = true;
 				genres_categorized["hip hop"].count += genres[key];
 				genres_categorized["hip hop"].types.push(key);
 			}
-			else if(key.includes("edm") || key.includes("electro") || key.includes("dance") || key.includes("house") || key.includes("room")){
+			if(key.includes("edm") || key.includes("electro") || key.includes("dance") || key.includes("house") || key.includes("room")){
+				flag = true;
 				genres_categorized["edm"].count += genres[key];
 				genres_categorized["edm"].types.push(key);
 			}
-			else if(key.includes("folk") || key.includes("sufi")){
+			if(key.includes("folk") || key.includes("sufi")){
+				flag = true;
 				genres_categorized["folk"].count += genres[key];
 				genres_categorized["folk"].types.push(key);
 			}
-			else if(key.includes("jazz") || key.includes("blues") || key.includes("r&b")){
+			if(key.includes("jazz") || key.includes("blues") || key.includes("r&b")){
+				flag = true;
 				genres_categorized["jazz"].count += genres[key];
 				genres_categorized["jazz"].types.push(key);
 			}
-			else if(key.includes("bollywood") || key.includes("filmi")){
+			if(key.includes("bollywood") || key.includes("filmi")){
+				flag = true;
 				genres_categorized["bollywood"].count += genres[key];
 				genres_categorized["bollywood"].types.push(key);
 			}
-			else if(key.includes("reggae")){
+			if(key.includes("reggae")){
+				flag = true;
 				genres_categorized["reggae"].count += genres[key];
 				genres_categorized["reggae"].types.push(key);
 			}
-			else if(key.includes("indie") || key.includes("soul")){
+			if(key.includes("indie") || key.includes("soul")){
+				flag = true;
 				genres_categorized["indie"].count += genres[key];
 				genres_categorized["indie"].types.push(key);
 			}
-			else{
+			if(!flag){
 				genres_categorized["others"].count += genres[key];
 				genres_categorized["others"].types.push(key);
 			}
