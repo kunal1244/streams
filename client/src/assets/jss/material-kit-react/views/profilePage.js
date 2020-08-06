@@ -2,6 +2,8 @@ import { container, title } from "assets/jss/material-kit-react.js";
 
 import imagesStyle from "assets/jss/material-kit-react/imagesStyles.js";
 
+import tooltipsStyle from "assets/jss/material-kit-react/tooltipsStyle.js";
+
 const profilePageStyle = {
   container,
   profile: {
@@ -23,6 +25,7 @@ const profilePageStyle = {
     marginTop: "-80px"
   },
   ...imagesStyle,
+  ...tooltipsStyle,
   main: {
     background: "#FFFFFF",
     position: "relative",
