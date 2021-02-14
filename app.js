@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const passport = require("passport");
+// const passport = require("passport");
 // const redis = require("redis");
 
 const cors = require('cors');
@@ -20,7 +20,7 @@ const cors = require('cors');
 const jwt = require("express-jwt");
 
 const spotifyRouter = require("./routes/spotify");
-const authRouter = require("./routes/auth");
+// const authRouter = require("./routes/auth");
 // const lastfmRouter = require("./routes/lastfm");
 
 const User = require("./models/User");
@@ -65,8 +65,8 @@ app.use(
 );
 app.use(bodyParser.json({ limit: "50mb" }));
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.use(express.static("client/build"));
 
