@@ -31,7 +31,7 @@ const User = require("./models/User");
  *
  * Default path: .env (You can remove the path argument entirely, after renaming `.env.example` to `.env`)
  */
-dotenv.load({ path: ".env" });
+// dotenv.load({ path: ".env" });
 
 /**
  * Create Express server.
