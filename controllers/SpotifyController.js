@@ -38,7 +38,7 @@ exports.callback = async (req, res) => {
 		spotifyConfig.accessToken = access_token;
 		spotifyApi.setAccessToken(access_token);
 		spotifyApi.setRefreshToken(refresh_token);
-		// console.log(access_token + "         " + refresh_token);
+		console.log(access_token + "         " + refresh_token);
 		res.redirect("http://localhost:3000");
 	} catch (err) {
 		res.redirect("/#/error/invalid token");

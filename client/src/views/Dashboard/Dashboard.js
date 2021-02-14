@@ -19,7 +19,7 @@ import Parallax from "components/Parallax/Parallax.js";
 
 import Tooltip from "@material-ui/core/Tooltip";
 
-import profile from "assets/img/faces/christian.jpg";
+import profile from "assets/img/faces/kunal.jpg";
 
 import studio1 from "assets/img/examples/studio-1.jpg";
 import studio2 from "assets/img/examples/studio-2.jpg";
@@ -71,7 +71,7 @@ export default function ProfilePage(props) {
 										<img src={profile} alt="..." className={imageClasses} />
 									</div>
 									<div className={classes.name}>
-										<h3 className={classes.title}>Christian Louboutin</h3>
+										<h3 className={classes.title}>Kunal Das</h3>
 									</div>
 								</div>
 							</GridItem>
@@ -100,24 +100,49 @@ export default function ProfilePage(props) {
 																className={navImageClasses}
 															/>
 														</Tooltip>
+														
+														<Tooltip
+															id="tooltip-left"
+															title="A Tribe Called Quest"
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 
 														<img
 															alt="..."
 															src={studio2}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+														
 													</GridItem>
 													<GridItem xs={12} sm={12} md={4}>
+														<Tooltip
+															id="tooltip-left"
+															title="A Tribe Called Quest"
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
 															src={studio5}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+
+														<Tooltip
+															id="tooltip-left"
+															title="A Tribe Called Quest"
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
 															src={studio4}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+														
 													</GridItem>
 												</GridContainer>
 											)
@@ -128,33 +153,71 @@ export default function ProfilePage(props) {
 											tabContent: (
 												<GridContainer justify="center">
 													<GridItem xs={12} sm={12} md={4}>
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.artists[0].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work1}
+															src={apiData.artists[0].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.artists[1].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work2}
+															src={apiData.artists[1].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.artists[2].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work3}
+															src={apiData.artists[2].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
 													</GridItem>
 													<GridItem xs={12} sm={12} md={4}>
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.artists[3].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work4}
+															src={apiData.artists[3].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.artists[4].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work5}
+															src={apiData.artists[4].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
 													</GridItem>
 												</GridContainer>
 											)
@@ -165,33 +228,71 @@ export default function ProfilePage(props) {
 											tabContent: (
 												<GridContainer justify="center">
 													<GridItem xs={12} sm={12} md={4}>
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.albums[0].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work4}
+															src={apiData.albums[0].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.albums[5].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={studio3}
+															src={apiData.albums[5].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.albums[2].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
+														<img
+															alt="..."
+															src={apiData.albums[2].images[0].url}
+															className={navImageClasses}
+														/>
+														</Tooltip>
 													</GridItem>
 													<GridItem xs={12} sm={12} md={4}>
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.albums[3].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work2}
+															src={apiData.albums[3].images[0].url}
 															className={navImageClasses}
 														/>
+														</Tooltip>
+
+														<Tooltip
+															id="tooltip-left"
+															title={apiData.albums[4].name}
+															placement="left"
+															classes={{ tooltip: classes.tooltip }}
+														>
 														<img
 															alt="..."
-															src={work1}
+															src={apiData.albums[4].images[0].url}
 															className={navImageClasses}
 														/>
-														<img
-															alt="..."
-															src={studio1}
-															className={navImageClasses}
-														/>
+														</Tooltip>
 													</GridItem>
 												</GridContainer>
 											)
