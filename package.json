@@ -5,7 +5,7 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.15.1",
     "connect-mongo": "^1.1.0",
