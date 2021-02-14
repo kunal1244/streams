@@ -6,7 +6,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 // const passport = require("passport");
 // const redis = require("redis");
 
@@ -40,7 +40,7 @@ const app = express();
 
 /**
  * Connect to MongoDB.
- */
+ 
 mongoose.connect(process.env.MONGODB, {
   useMongoClient: true,
 });
@@ -51,7 +51,7 @@ mongoose.connection.on("error", function () {
   process.exit(1);
 });
 mongoose.set("debug", true);
-
+*/
 /**
  * Express configuration.
  */
