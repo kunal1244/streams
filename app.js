@@ -77,7 +77,7 @@ app.use("/spotify", spotifyRouter);
 /**
  * Start Express server.
  */
-
+app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 app.listen(app.get("port"), function () {
