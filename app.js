@@ -71,7 +71,7 @@ app.use(passport.session());
 app.use(express.static("client/build"));
 
 app.use("/spotify", spotifyRouter);
-app.use("/auth", authRouter);
+// app.use("/auth", authRouter);
 // app.use("/lastfm", lastfmRouter);
 
 /**
