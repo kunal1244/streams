@@ -77,6 +77,9 @@ app.use("/spotify", spotifyRouter);
 /**
  * Start Express server.
  */
+
+app.set('view engine', 'html');
+
 app.listen(app.get("port"), function () {
   console.log(
     "Express server listening on port %d in %s mode",
